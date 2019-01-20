@@ -1,0 +1,11 @@
+{
+  "service": "aws-lambda-s3-404",
+  "profile": "serverless-admin",
+  "stage": "dev",
+  "region": "us-east-2",
+  "originals": "originals-bucket-name",
+  "destination": "processed-bucket-name",
+  "uri": null,
+  "token": null,
+  "signed": false
+}
