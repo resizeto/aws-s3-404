@@ -7,5 +7,6 @@
   "destination": "processed-bucket-name",
   "uri": null,
   "token": null,
-  "signed": false
+  "signed": false,
+  "verbose": true
 }

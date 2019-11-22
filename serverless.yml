@@ -1,35 +1,36 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
 # For full config options, check the docs:
 #    docs.serverless.com
-#
-# Happy Coding!
 
 service: ${file(config.json):service}
+
+package:
+  exclude:
+    - src/*.test.js
+    - "*.test.js"
+    - config.sample.json
+    - fixtures/**
+    - coverage/**
+    - jest.config.js
+    - LICENSE
+    - README.md
 
 provider:
   name: aws
   runtime: nodejs8.10
   profile: ${file(config.json):profile}
-  stage: dev
+  stage: production
   region: ${file(config.json):region}
-
-iamRoleStatements:
-  -  Effect: "Allow"
-     Action:
-       - "s3:ListBucket"
-       - "s3:GetObject"
-     Resource: "arn:aws:s3:::${file(config.json):originals}"
-  -  Effect: "Allow"
-     Action:
-       - "s3:PutObject"
-     Resource: "arn:aws:s3:::${file(config.json):destination}"
+  iamRoleStatements:
+    -  Effect: "Allow"
+       Action:
+         - "s3:ListBucket"
+         - "s3:GetObject"
+       Resource: "arn:aws:s3:::${file(config.json):originals}"
+    -  Effect: "Allow"
+       Action:
+         - "s3:CreateBucket"
+         - "s3:PutObject"
+       Resource: "arn:aws:s3:::${file(config.json):destination}"
 
 functions:
   resizeto404:
@@ -38,3 +39,30 @@ functions:
       - http:
           path: resizeto404
           method: get
+
+# resources:
+#   Resources:
+#     OriginalsS3Bucket:
+#       Type: AWS::S3::Bucket
+#       Properties:
+#         BucketName: ${file(config.json):originals}
+#     DestinationS3Bucket:
+#       Type: AWS::S3::Bucket
+#       Properties:
+#         BucketName: ${file(config.json):destination}
+#         AccessControl: PublicRead
+#         WebsiteConfiguration:
+#           IndexDocument: index.html
+#           ErrorDocument: error.html
+#           RoutingRules:
+#             - RedirectRule:
+#                 HostName:
+#                   Fn::Join:
+#                     - ''
+#                     - - Ref: ApiGatewayRestApi
+#                       - ".execute-api.${self:provider.region}.amazonaws.com/"
+#                 HttpRedirectCode: 307
+#                 Protocol: https
+#                 ReplaceKeyPrefixWith: "${self:provider.stage}/resizeto404?key="
+#               RoutingRuleCondition:
+#                 HttpErrorCodeReturnedEquals: 404
